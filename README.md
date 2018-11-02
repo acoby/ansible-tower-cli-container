@@ -8,9 +8,27 @@ At the time of checking we were unable to find an official container image maint
 
 ## Examples
 
+### Docker Run
+
 ```bash
 docker run --rm -ti perritbv/ansible-tower-cli --help
 docker run --rm -ti perritbv/ansible-tower-cli --version
+```
+
+### `.gitlab-ci.yml`
+
+```yaml
+launch:
+  only: ['master']
+  image:
+    name: perritbv/ansible-tower-cli
+    entrypoint: ["/bin/sh", "-c"]
+  script:
+    - tower-cli config verify_ssl $AWX_VERIFY_SSL
+    - tower-cli config host $AWX_HOST
+    - tower-cli config username $AWX_USERNAME
+    - tower-cli config password $AWX_PASSWORD
+    - tower-cli job launch --job-template=$AWX_JOB_TEMPLATE
 ```
 
 ## Links
