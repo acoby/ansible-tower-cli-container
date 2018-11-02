@@ -19,7 +19,7 @@ docker run --rm -ti perritbv/ansible-tower-cli --version
 
 ```yaml
 launch:
-  only: ['master']
+  only: ["master"]
   image:
     name: perritbv/ansible-tower-cli
     entrypoint: ["/bin/sh", "-c"]
