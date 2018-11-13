@@ -7,4 +7,5 @@ RUN staticx /dist/tower-cli /tower-cli
 
 FROM scratch
 COPY --from=build /tower-cli /
+VOLUME /tmp/
 ENTRYPOINT ["/tower-cli"]
