@@ -8,7 +8,7 @@ RUN staticx /dist/tower-cli /tower-cli
 FROM busybox as shell
 
 FROM scratch
-COPY --from=build /tower-cli /
+COPY --from=build /tower-cli /tower-cli
 COPY --from=shell /bin/sh /bin/sh
 VOLUME /tmp/
 ENTRYPOINT ["/tower-cli"]
