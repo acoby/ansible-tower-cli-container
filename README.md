@@ -11,8 +11,8 @@ At the time of checking we were unable to find an official container image maint
 ### Docker Run
 
 ```bash
-docker run --rm -ti perrit/ansible-tower-cli --help
-docker run --rm -ti perrit/ansible-tower-cli --version
+docker run --rm -ti perrit/ansible-tower-cli tower-cli --help
+docker run --rm -ti perrit/ansible-tower-cli tower-cli --version
 ```
 
 ### `.gitlab-ci.yml`
@@ -20,9 +20,7 @@ docker run --rm -ti perrit/ansible-tower-cli --version
 ```yaml
 launch:
   only: ["master"]
-  image:
-    name: perrit/ansible-tower-cli
-    entrypoint: ["/bin/sh", "-c"]
+  image: perrit/ansible-tower-cli
   script:
     - tower-cli config verify_ssl $AWX_VERIFY_SSL
     - tower-cli config host $AWX_HOST
