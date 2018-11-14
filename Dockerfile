@@ -1,2 +1,2 @@
 FROM python:alpine
-RUN ["pip", "install", "ansible-tower-cli"]
+RUN pip install ansible-tower-cli
