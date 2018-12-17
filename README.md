@@ -33,4 +33,5 @@ launch:
 
 * https://github.com/ansible/tower-cli
 * https://github.com/perrit/ansible-tower-cli-container
+* https://gitlab.com/perrit/ansible-tower-cli-container
 * https://hub.docker.com/r/perrit/ansible-tower-cli/
