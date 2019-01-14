@@ -13,6 +13,8 @@ At the time of checking we were unable to find an official container image maint
 ```bash
 docker run --rm -ti perrit/ansible-tower-cli tower-cli --help
 docker run --rm -ti perrit/ansible-tower-cli tower-cli --version
+docker run --rm -ti registry.gitlab.com/perrit/ansible-tower-cli-container tower-cli --help
+docker run --rm -ti registry.gitlab.com/perrit/ansible-tower-cli-container tower-cli --version
 ```
 
 ### `.gitlab-ci.yml`
