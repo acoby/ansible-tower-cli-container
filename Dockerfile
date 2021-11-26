@@ -1,4 +1,8 @@
 FROM python:alpine
-LABEL maintainer="Perrit B.V. <support@perrit.nl>"
-RUN ["/usr/local/bin/pip", "--no-cache", "install", "ansible-tower-cli"]
+LABEL maintainer="TRW <trw@acoby.de>"
+
+RUN /usr/local/bin/python3 -m pip install --upgrade pip && \
+  /usr/local/bin/python3 -m pip --no-cache install netaddr passlib requests && \
+  /usr/local/bin/python3 -m pip --no-cache install ansible-tower-cli
+
 CMD ["/usr/local/bin/tower-cli", "--help"]
