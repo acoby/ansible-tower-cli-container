@@ -1,0 +1,127 @@
+#!/usr/bin/env python3
+
+import os
+import sys
+import argparse
+import json
+import requests
+import subprocess
+
+from requests.packages.urllib3.exceptions import InsecureRequestWarning
+requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
+
+# TOWER_CLI = ['echo']
+TOWER_CLI = ['tower-cli']
+
+class RunCLI(object):
+  def __init__(self):
+    self.read_cli_args()
+
+    jobtemplates = self.get_jobtemplates()
+    # print(json.dumps(jobtemplates, indent=2, sort_keys=True))
+    
+    skipTags = jobtemplates.get('skip')
+    tags = jobtemplates.get('tag')
+    
+    
+    if 'instances' not in jobtemplates:
+      print('No instances found')
+      exit(1)
+
+    exitcode = 0
+    for instance in jobtemplates.get('instances'):
+      template = instance.get('template')
+      instanceId = instance.get('instanceId')
+      
+      if self.args.instance == None:
+        # run once for all instances
+        exitcode += self.run_tower_cli(template, tags, skipTags)
+        break
+      elif self.args.instance == instanceId:
+        # check, if instanceId equals instance arg and run only for that
+        exitcode += self.run_tower_cli(template, tags, skipTags, instanceId)
+    if exitcode == 0:
+      print('Successful...')
+    else:
+      print('Failure...')
+
+    exit(exitcode)
+
+  def run_tower_cli(self, template, tags = None, skipTags = None, instanceId = None):
+    # tower-cli job launch --job-template ${AWX_JOB_TEMPLATE} --tags ${AWX_TAG} --extra-vars \"dummy_var=true\" --job-type run --monitor
+    
+    cmd = TOWER_CLI.copy()
+    cmd.append('job')
+    cmd.append('launch')
+    cmd.append('--job-type')
+    cmd.append('run')
+    cmd.append('--monitor')
+    cmd.append('--job-template')
+    cmd.append(str(template))
+
+    if tags != None and tags != "":
+      cmd.append('--tags')
+      cmd.append(tags)
+
+    if skipTags != None and skipTags != "":
+      cmd.append('--skip-tags')
+      cmd.append(skipTags)
+
+    cmd.append('--extra-vars')
+    if instanceId != None and skipTags != "":
+      cmd.append('"instanceId='+instanceId+'"')
+    else:
+      cmd.append('"dummy_var=true"')
+    
+    try:
+      print('Run Tower-CLI, please wait...')
+      result = subprocess.run(cmd, stdout=subprocess.PIPE)
+      print(result.stdout.decode('utf-8'))
+      return result.returncode
+    except BaseException as err:
+      print('Could not run command:\n#> {}\n\n{}'.format(' '.join(cmd),err))
+      return 1
+
+  
+  def get_jobtemplates(self):
+    url = self.args.url + "?qualifier=" + self.args.qualifier
+    
+    if self.args.instance != None:
+      url = url + "&instance=" + self.args.instance
+    
+    username = self.args.username
+    password = self.args.password
+    
+ 
+    headers = {
+      'Accept': 'application/json',
+      'User-Agent': 'acoby-ci-script/v1.0',
+      'Connection': 'close'
+    }
+    
+    print('Calling {}'.format(url))
+    
+    try:
+      result = requests.get(url, timeout=5, auth=(username,password), headers=headers, verify=False)
+      result.encoding = 'utf-8'
+      return json.loads(result.text)
+    except:
+      print('Could not read CI response from NOBOD')
+      exit(1)
+
+  def syntax_error(self):
+    print('Syntax: run_cli.py --qualifier <qualifier> [--instance <instanceid>] --username <user> --password <password> --url <url>')
+    exit(1)
+
+  # Read the command line args passed to the script.
+  def read_cli_args(self):
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--qualifier', action = 'store', type=str, help='qualifier for a service', required=True)
+    parser.add_argument('--instance', action = 'store', type=str, help='an optional concrete instance id', required=False)
+    parser.add_argument('--username', action = 'store', type=str, help='the username to access the NOBOD CI API', required=True)
+    parser.add_argument('--password', action = 'store', type=str, help='the password to access the NOBOD CI API', required=True)
+    parser.add_argument('--url', action = 'store', type=str, help='an URL to the NOBOD CI API', required=True)
+    self.args = parser.parse_args()
+
+# Get the inventory.
+RunCLI()
