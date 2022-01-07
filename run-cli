@@ -109,10 +109,6 @@ class RunCLI(object):
       print('Could not read CI response from NOBOD')
       exit(1)
 
-  def syntax_error(self):
-    print('Syntax: run_cli.py --qualifier <qualifier> [--instance <instanceid>] --username <user> --password <password> --url <url>')
-    exit(1)
-
   # Read the command line args passed to the script.
   def read_cli_args(self):
     parser = argparse.ArgumentParser()
