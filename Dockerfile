@@ -7,6 +7,8 @@ LABEL maintainer="TRW <trw@acoby.de>" \
       org.label-schema.url="https://github.com/acoby/ansible-tower-cli-container" \
       org.label-schema.vendor="acoby GmbH"
 
+ENV TZ Europe/Berlin
+
 RUN apk add --no-cache --virtual .build-deps gcc musl-dev libffi-dev openssl-dev && \
   /usr/local/bin/python3 -m pip install --upgrade pip && \
   /usr/local/bin/python3 -m pip --no-cache install netaddr passlib requests && \
